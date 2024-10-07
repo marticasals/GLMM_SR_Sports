@@ -1,0 +1,269 @@
+---
+title: "**Exploratory analysis of the Methodological Quality and Reporting of GLMM in Sports: a Scoping Review**"
+output: pdf_document
+date: ""
+editor_options: 
+  chunk_output_type: console
+header-includes:
+  - \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+library(descr)
+library(kableExtra)
+library(class)
+library(lessR)
+library(forcats)
+library(stringr)
+library(compareGroups)
+library(camcorder)
+
+theme_set(theme_bw())
+```
+
+```{r}
+bd <- read_excel("../Data/sr_GLMM_results_data.xlsx")
+names(bd) <- str_replace_all(names(bd), ":", "")
+bd <- bd |> mutate(across(is.character, ~dplyr::recode(.x, NR = "Not Reported", .default = .x)))
+bd <- dplyr::rename(bd, all_of(c("Participants category" = "Category participants")))
+```
+
+# General characteristics of the selected articles
+
+```{r}
+# summary(bd)
+```
+
+
+```{r, eval = F, results = "hide"}
+tab <- descrTable(~  Country + `Journal Name` + `Type of Journal` +  `N (participants)` + `Age (participants)` + `Outcome type` + `Type of design` + `Multilevel (nested design)`,
+                  data = bd,
+                  include.miss = TRUE, show.n = FALSE)
+export2md(tab, include.miss = TRUE, nmax = FALSE,
+          caption = "General characteristics of the GLMM models of the N = 55 selected articles in the scoping review, frequencies (percentages) for categorical variables and median (IQR) for continuous variables.",
+          header.labels = c("all" = "N (%)"))
+```
+
+
+
+```{r, fig.width = 20*0.393701, fig.height = 26*0.393701, fig.dpi = 300}
+p1 <- bd |> 
+  mutate(Country = case_when(!(Country %in% c("USA", "International", "Australia", "Spain",
+                                              "Canada", "Netherlands", "Norway", "UK")) ~ "Others",
+                             .default = Country)) |> 
+  ggplot(aes(x = fct_relevel(fct_rev(fct_infreq(Country)), "Others", after = 0))) +
+  geom_bar(fill = "skyblue") +
+  geom_text(stat = "count", aes(label = paste("", after_stat(count), " (", round(after_stat(count)/sum(after_stat(count))*100, 2), "%)")), hjust = 0, size = 4, nudge_y = 0.2) +
+  coord_flip() +
+  labs(title = "Country", y = "N (number of articles)", x = "") +
+   scale_y_continuous(expand = expansion(mult = c(0.03, 0.35))) +
+  theme(legend.position = "none",
+        plot.title = element_text(size = rel(1.4)),
+        axis.text.y = element_text(size = rel(1.3)),
+        axis.title = element_text(size = rel(1.4)))
+
+p2 <- bd |> 
+  mutate(`Journal Name` = case_when(!(`Journal Name` %in% c("Journal of Quantitative Analysis in Sports",
+                                              "Frontiers in Psychology",
+                                              "Frontiers in Sports and Active Living",
+                                              "Journal of Sports Science and Medicine",
+                                              "PLoS One",
+                                              "Journal of Applied Statistics",
+                                              "Scientific Reports")) ~ "Others",
+                             .default = `Journal Name`)) |> 
+  ggplot(aes(x = fct_relevel(fct_rev(fct_infreq(`Journal Name`)), "Others", after = 0))) +
+  geom_bar(fill = "skyblue") +
+  geom_text(stat = "count", aes(label = paste("", after_stat(count), " (", round(after_stat(count)/sum(after_stat(count))*100, 2), "%)")), hjust = 0, size = 4, nudge_y = 0.2) +
+  coord_flip() +
+  labs(title = "Journal", y = "N (number of articles)", x = "") +
+  scale_x_discrete(label = scales::label_wrap(25)) +
+   scale_y_continuous(expand = expansion(mult = c(0.03, 0.35))) +
+  theme(legend.position = "none",
+        plot.title = element_text(size = rel(1.4)),
+        axis.text.y = element_text(size = rel(1.3)),
+        axis.title = element_text(size = rel(1.4)))
+
+p1 / p2 + 
+  plot_layout(guides = "collect", axes = "collect_x") +
+  plot_annotation(tag_levels = "A", tag_prefix = "(", tag_suffix = ")")
+```
+
+
+```{r, eval = F, results = "hide"}
+tab <- descrTable(~ Sport + Gender+ `Participants category` + `Category classification`,
+                  data = bd,
+                  include.miss = TRUE, show.n = FALSE)
+export2md(tab, include.miss = TRUE, nmax = FALSE,
+          caption = "Characteristics of the sport in the N = 55 selected articles in the scoping review, frequencies (percentages) for categorical variables and median (IQR) for continuous variables.",
+          header.labels = c("all" = "N"))
+```
+
+```{r, eval = F, results = "hide"}
+tab <- descrTable(~  `Test for fixed effects`  + `Test for random effects` + `Variance estimates of random effects` + `Statistical software` +  `Estimation method` + `Data shared` + `Code shared` + `Variable response distribution` + `Overdispersion evaluation` + `Method of variable selection` + `Method of model selection` + `GLMM Validation`,
+                  data = bd,
+                  include.miss = TRUE, show.n = FALSE)
+export2md(tab, include.miss = TRUE, nmax = FALSE,
+          caption = "General characteristics of the GLMM models of the N = 55 selected articles in the scoping review, frequencies (percentages) for categorical variables and median (IQR) for continuous variables.",
+          header.labels = c("all" = "N"))
+```
+
+
+```{r}
+tab <- descrTable(~.-`Publication Year`, data = bd, include.miss = TRUE, show.n = FALSE)
+export2md(tab, 
+          include.miss = TRUE, nmax = FALSE,
+          caption = "Characteristics of the N = 55 selected articles in the scoping review, frequencies and percentages.",
+          header.labels = c("all" = "N (%)"))
+```
+
+In general, the quality and reporting of Generalized Linear Mixed Models in sports is \textbf{\textcolor{red}{poor}}:
+
+- 27.3% of the selected articles did not report the type of study design (whether longitudinal or cross-sectional). 
+
+- 18.2% of the articles did not report the sex of the use case participants.
+
+- \textbf{\textcolor{red}{83.6\%}} of the articles did not report any test for fixed effects and \textbf{\textcolor{red}{NO}} articles reported test for random effects. \textbf{\textcolor{red}{72.7\%}} of the articles did not report the variance estimates of random effects. 
+
+- 12.7% of the articles did not report distribution of the response variable.  91% of the articles did not assess overdispersion in their variables, 78.2% did not report the method for the model selection, and 91% did not report that any validation had been performed on their GLMMs.
+
+
+\clearpage
+
+
+
+```{r, fig.width=7, fig.height=3, fig.cap = "Number of papers published among the 55 selected over the years. The blue line represents the temporal trend."}
+bd |> 
+  summarise(n = n(), .by = `Publication Year`) |> 
+  filter(`Publication Year` >= 2011) |> 
+  ggplot(aes(x = `Publication Year`, y = n)) + 
+  geom_line() + geom_point() + 
+  geom_smooth(se = FALSE, size = 0.75, method = "loess") +
+  ylab("N (number of articles)") +
+  scale_x_continuous(breaks = seq(2011, 2023, by = 1)) +
+  scale_y_continuous(limits = c(0, 12.5), breaks = seq(0, 12, 2)) +
+  labs(caption = "The 1994 article was excluded")
+```
+
+
+```{r, fig.width = 7, fig.height = 3, fig.cap = "Distribution of the countries from which the data of the 55 selected articles come from."}
+bd |> 
+  ggplot(aes(x = fct_rev(fct_infreq(Country)))) +
+  geom_bar(fill = "skyblue") +
+  geom_text(aes(label = paste0(stat(count), 
+                               " (", round(prop.table(count)*100, 1), "%)")), stat = "count", 
+            hjust = -0.2) +
+  coord_flip() +
+  ylab("N (number of articles)") + xlab("") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.25)))
+```
+
+
+## Characteristics of the sport and data
+
+
+
+```{r, fig.width=23*0.393701, fig.height = 28*0.393701, fig.cap = "Distribution of the sports studied (panel (A)), the gender of the participants (panel (B)) and the professional category of the participants (panel (C)) in the 55 selected articles.", fig.pos="H", out.extra=""}
+
+bd <- bd |> 
+  mutate(Sport2 = case_when(Sport %in% c("Rugby", "Swimming", "Australian football", "Ice hockey", "Voleyball", "Bicycling", "Field hockey", "Fishing", "Formula 1", "Leonese wrestling", "Tennis") ~ "Others", .default = Sport
+                            ))
+
+vars <- names(bd)[c(ncol(bd), 14:15)] # Sport, Gender, Participants category
+j <- 1
+
+for(i in vars) {
+  p_name <- paste0("p", j) 
+  assign(p_name, ggplot(bd, aes(x = fct_rev(fct_infreq(.data[[i]])))) +
+           geom_bar(aes(fill = `Category classification`)) +
+           geom_text(aes(label = paste0(..count.., " (", round(prop.table(stat(count))*100, 2), "%)"), y = ..count..), stat = "count", nudge_y = 0.2, hjust = 0) +
+           geom_text(aes(label = stat(count), group = `Category classification`), stat = "count", 
+                     fontface = "bold", col = "white", vjust = 0.45, position = position_stack(vjust = 0.5)) + 
+           ggtitle(i) +
+           coord_flip() +
+           scale_y_continuous(expand = expansion(mult = c(0.03, 0.25))) +
+           ylab("N (number of articles)") + xlab("") +
+           scale_fill_manual(values = rev(c("#DF8F44FF", "#00A1D5FF", "#B24745FF")), name = "") +
+           theme(legend.title = element_text(size = rel(1.3)),
+                 legend.text = element_text(size = rel(1.3)),
+                 axis.text.x = element_text(size = rel(1.2)),
+                 axis.text.y = element_text(size = rel(1.3)),
+                 axis.title = element_text(size = rel(1.4)),
+                 plot.title = element_text(size = rel(1.4)))
+  )
+  j <- j + 1
+}
+p1 <- p1 + ggtitle("Sport")
+p1 / p2 / p3 + 
+  plot_layout(guides = "collect", axes = "collect_x") +
+  plot_annotation(tag_levels = "A", tag_prefix = "(", tag_suffix = ")") & theme(legend.position = "bottom",
+                                                                                legend.title = element_blank())
+
+```
+
+
+
+```{r}
+bd <- bd |> 
+  mutate(Software = if_else(`Statistical software` %in% 
+                              c("Statistica", "MLwiN", "WinBUGS", "Stata", "HLM", "HLM5 statistical software",
+                                "Predictive Analytics Software", "Mplus"), "Other", 
+                            `Statistical software`),
+         Software = if_else(Software == "SAS, SPSS", "SAS", Software)) ### WATCH OUT!!!
+
+```
+
+## Characteristics of the methodology
+
+```{r, fig.width = 23*0.393701, fig.height = 27*0.393701, fig.cap="Distribution of the type of study design (panel (A)), whether multilevel models are used (panel (B)) and of the statistical software used (panel (C)) in the 55 selected articles.", fig.pos = "H", out.extra=""}
+vars <- names(bd)[c(11, 12, ncol(bd))] # type of design, multilevel, software
+j <- 1
+
+for(i in vars) {
+  p_name <- paste0("p", j) 
+  sub_data <- bd |> 
+    summarise(n = n(), .by = .data[[i]]) |>
+    mutate(pct = n/sum(n),
+           {{i}} := fct_reorder(.data[[i]], pct))
+  assign(p_name, ggplot(sub_data, aes(x = .data[[i]], y = n)) +
+           geom_bar(stat = "identity", fill = "skyblue") +
+           geom_text(aes(label = paste("", n, " (", round(pct*100, 2), "%)")), hjust = 0, size = 4, nudge_y = 0.2) +
+           scale_x_discrete(label = scales::label_wrap(20)) +
+           scale_y_continuous(expand = expansion(mult = c(0.03, 0.25))) +
+           coord_flip() +
+           labs(title = i, y = "N (number of articles)", x = "") +
+           theme(legend.position = "none",
+                 plot.title = element_text(size = rel(1.4)),
+                 axis.text.y = element_text(size = rel(1.3)),
+                 axis.title = element_text(size = rel(1.4)))
+  )
+  j <- j + 1
+}
+
+p1 / p2 / p3 + 
+  plot_layout(guides = "collect", axes = "collect_x") +
+  plot_annotation(tag_levels = "A", tag_prefix = "(", tag_suffix = ")")
+
+```
+
+
+
+# Main conclusions
+
+- Out of 55 selected articles 32 (58.2%) were published in sports journals, 19 (34.5%) in multidisciplinary journals and 4 (7.28%) in statistics journals. Regarding the multilevel design, 43 (78%) of the selected articles reported to have a multilevel design. Moreover, over sixty percent were longitudinal/repeated measure studies, whereas 9% (5 articles) were cross-sectional studies, and 27% (15 articles) did not report their study design.  
+
+- On the use case sports data, the three most predominant sports were soccer (20%), multidisciplinary sports (16.4%) and baseball (12.7%). Over seventy percent of the articles were devoted to the study of sports performance analysis, 23.6% to health and 5.5% to academic performance. In addition, the use case participants were professionals in the 64% of the selected articles, while in 33% they were amateurs. Only three articles (5.4%) included female participants, 27 articles (49%) included male participants and 10 articles (18.2%) did not report the sex of the participants. 
+
+- The majority of the selected articles did not share their data nor their code, only 9 and 8 articles did so, respectively. 42% of the articles used R open-source software in their analyses.
+
+
+
+
+
+
+
