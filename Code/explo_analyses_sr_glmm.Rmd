@@ -21,6 +21,7 @@ library(class)
 library(lessR)
 library(forcats)
 library(stringr)
+library(tidyr)
 library(compareGroups)
 library(camcorder)
 
@@ -114,7 +115,8 @@ export2md(tab, include.miss = TRUE, nmax = FALSE,
 ```
 
 
-**Overdispersion evaluation**
+**Overdispersion evaluation** 
+(eligible response variable distribution)
 ```{r}
 # unique(bd$`Variable response distribution`)
 bd  |> 
