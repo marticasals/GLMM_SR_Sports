@@ -114,6 +114,17 @@ export2md(tab, include.miss = TRUE, nmax = FALSE,
 ```
 
 
+**Overdispersion evaluation**
+```{r}
+# unique(bd$`Variable response distribution`)
+bd  |> 
+  mutate(need_overdispersion = `Variable response distribution` %in% c("Poisson", "Multinomial", "Poisson, Negative-Binomial")) |> 
+  count(need_overdispersion, `Overdispersion evaluation`) |> 
+  pivot_wider(names_from = `Overdispersion evaluation`, values_from = n) |> 
+  mutate(frac = Yes/(Yes + `Not Reported`)) 
+```
+
+
 ```{r}
 tab <- descrTable(~.-`Publication Year`, data = bd, include.miss = TRUE, show.n = FALSE)
 export2md(tab, 
