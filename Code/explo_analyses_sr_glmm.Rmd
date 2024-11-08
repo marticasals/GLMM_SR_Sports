@@ -116,7 +116,7 @@ export2md(tab, include.miss = TRUE, nmax = FALSE,
 
 
 **Overdispersion evaluation** 
-(eligible response variable distribution)
+(NOTE: The response variables eligible to test for overdispersion are variables with Poisson and multinomial distributions.)
 ```{r}
 # unique(bd$`Variable response distribution`)
 bd  |> 
