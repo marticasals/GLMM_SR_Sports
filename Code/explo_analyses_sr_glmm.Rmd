@@ -53,7 +53,7 @@ export2md(tab, include.miss = TRUE, nmax = FALSE,
 
 
 
-```{r, fig.width = 20*0.393701, fig.height = 26*0.393701, fig.dpi = 300}
+```{r, fig.width = 20*0.393701, fig.height = 26*0.393701, fig.dpi = 300, fig.cap = "Distribution of the countries where the data from the articles come from (panel (A)) and the name of the journal where the articles were published (panel (B)) among the 55 selected articles."}
 p1 <- bd |> 
   mutate(Country = case_when(!(Country %in% c("USA", "International", "Australia", "Spain",
                                               "Canada", "Netherlands", "Norway", "UK")) ~ "Others",
@@ -156,32 +156,21 @@ bd |>
   filter(`Publication Year` >= 2011) |> 
   ggplot(aes(x = `Publication Year`, y = n)) + 
   geom_line() + geom_point() + 
-  geom_smooth(se = FALSE, size = 0.75, method = "loess") +
+  geom_smooth(se = FALSE, size = 0.75, method = "lm") +
   ylab("N (number of articles)") +
   scale_x_continuous(breaks = seq(2011, 2023, by = 1)) +
   scale_y_continuous(limits = c(0, 12.5), breaks = seq(0, 12, 2)) +
-  labs(caption = "The 1994 article was excluded")
+  labs(caption = "*The 1994 article was excluded")
 ```
 
 
-```{r, fig.width = 7, fig.height = 3, fig.cap = "Distribution of the countries from which the data of the 55 selected articles come from."}
-bd |> 
-  ggplot(aes(x = fct_rev(fct_infreq(Country)))) +
-  geom_bar(fill = "skyblue") +
-  geom_text(aes(label = paste0(stat(count), 
-                               " (", round(prop.table(count)*100, 1), "%)")), stat = "count", 
-            hjust = -0.2) +
-  coord_flip() +
-  ylab("N (number of articles)") + xlab("") +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.25)))
-```
 
 
 ## Characteristics of the sport and data
 
 
 
-```{r, fig.width=23*0.393701, fig.height = 28*0.393701, fig.cap = "Distribution of the sports studied (panel (A)), the gender of the participants (panel (B)) and the professional category of the participants (panel (C)) in the 55 selected articles.", fig.pos="H", out.extra=""}
+```{r, fig.width=23*0.393701, fig.height = 28*0.393701, fig.cap = "Distribution of sports disciplines studied (panel (A)), participant gender (panel (B)), and professional categories among participants (panel (C)) according to the type of sport category in the 55 selected articles.", fig.pos="H", out.extra=""}
 
 bd <- bd |> 
   mutate(Sport2 = case_when(Sport %in% c("Rugby", "Swimming", "Australian football", "Ice hockey", "Voleyball", "Bicycling", "Field hockey", "Fishing", "Formula 1", "Leonese wrestling", "Tennis") ~ "Others", .default = Sport
@@ -233,7 +222,7 @@ bd <- bd |>
 
 ## Characteristics of the methodology
 
-```{r, fig.width = 23*0.393701, fig.height = 27*0.393701, fig.cap="Distribution of the type of study design (panel (A)), whether multilevel models are used (panel (B)) and of the statistical software used (panel (C)) in the 55 selected articles.", fig.pos = "H", out.extra=""}
+```{r, fig.width = 23*0.393701, fig.height = 27*0.393701, fig.cap="Distribution of the study designs (panel (A)), use of multilevel models (panel (B)), and statistical software employed (panel (C)) across the 55 selected articles.", fig.pos = "H", out.extra=""}
 vars <- names(bd)[c(11, 12, ncol(bd))] # type of design, multilevel, software
 j <- 1
 
