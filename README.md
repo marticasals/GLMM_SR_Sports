@@ -8,7 +8,7 @@ This dataset was compiled and curated by:
 
 - **Lore Zumeta Olaskoaga** – [@lzumeta](https://github.com/lzumeta)
 
-- Affiliation: Biogipuzkoa Health Research Institute, Donostia - San Sebastián; Deusto Physical TherapIker, Department of Physiotherapy, University of Deusto, Donostia - SanSebastián, Spain
+  Affiliation: Biogipuzkoa Health Research Institute, Donostia - San Sebastián; Deusto Physical TherapIker, Department of Physiotherapy, University of Deusto, Donostia - SanSebastián, Spain
 
   [![ORCID iD](https://img.shields.io/badge/ORCID-0000--0001--6141--1469-a6ce39?logo=orcid&logoColor=white&style=flat-square)](https://orcid.org/0000-0001-6141-1469)
 
